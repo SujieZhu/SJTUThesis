@@ -4,13 +4,15 @@
 %%==================================================
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{sjtuthesis}[2016/04/06 v0.9 Shanghai Jiao Tong University Template]
-\def\version{v0.9}
+\ProvidesClass{sjtuthesis}[2015/3/15 v0.7 Shanghai Jiao Tong University Template]
+\def\version{v0.7}
 \newif\ifsjtu@bachelor\sjtu@bachelorfalse
 \newif\ifsjtu@master\sjtu@masterfalse
 \newif\ifsjtu@doctor\sjtu@doctorfalse
 \newif\ifsjtu@review\sjtu@reviewfalse
 \newif\ifsjtu@submit\sjtu@submitfalse
+\newif\ifsjtu@typeinfo \sjtu@typeinfotrue
+\DeclareOption{notypeinfo}{\sjtu@typeinfofalse}
 \DeclareOption{bachelor}{\sjtu@bachelortrue}
 \DeclareOption{master}{\sjtu@mastertrue}
 \DeclareOption{doctor}{\sjtu@doctortrue}
@@ -18,9 +20,7 @@
 \DeclareOption{submit}{\sjtu@submittrue}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{ctexbook}}
 \ProcessOptions\relax
-%\LoadClass[a4paper,UTF8]{ctexbook}
-%\LoadClass[a4paper,UTF8,scheme=english]{ctexbook}
-\LoadClass[a4paper,UTF8]{ctexbook}
+\LoadClass[a4paper,UTF8,scheme=chinese]{ctexbook}
 \ifsjtu@bachelor\relax\else
   \ifsjtu@master\relax\else
     \ifsjtu@doctor\relax\else
@@ -29,7 +29,6 @@
     \fi
   \fi
 \fi
-
 
 %% sjtuthesis.cls segments
 % 0. Import sjtuthesis.cfg
@@ -63,10 +62,8 @@
 \RequirePackage{upgreek}
 \RequirePackage{graphicx}
 \RequirePackage{subfigure}
-%\RequirePackage{ccaption}
-%\RequirePackage[backend=bibtex, style=caspervector,utf8, bibencoding=utf8, sorting=none]{biblatex}
-%change here to import bibtex instead of bibter
-\RequirePackage[backend=bibtex, bibencoding=utf8,sorting=none]{biblatex}
+\RequirePackage{ccaption}
+\RequirePackage[sort&compress,numbers]{natbib}
 \RequirePackage{xcolor}
 \RequirePackage{wasysym}
 \RequirePackage{listings}
@@ -76,57 +73,17 @@
 \RequirePackage[inline]{enumitem}
 \RequirePackage{pdfpages}
 \RequirePackage{calc}
-%\RequirePackage{algorithm, algorithmic}
+\RequirePackage{algorithm, algorithmic}
 \RequirePackage{siunitx}
 \RequirePackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows}
 
-%Add here to import assumption
-\usepackage{amsthm}
-\usepackage{amsmath}
-{
-	\theoremstyle{plain}
-	\newtheorem{assumption}{Assumption}
-}
-\usepackage{amssymb}
-\usepackage{threeparttable}
-\usepackage{booktabs}
-
-\usepackage{algorithm}
-
-%% This package is used for setting the line spaces
-\usepackage{setspace}
-
-%% This package is important for change in the chapter's properties. 
-\usepackage{titlesec}
-
-
-%\usepackage{algpseudocode}
-\usepackage[noend]{algpseudocode}
-% \usepackage[noend]{algorithm2e}
-
-%\usepackage{varwidth}
-%\usepackage{bm}
-% This template can not work with following to packages, I don't know why.  
-%\usepackage{subfig}
-%\usepackage{multirow}
-%
-
-%change figure name and table name back to english
-%You should not add options when importing caption package, because there are conflicts with biblatex package. I don't know how to solve it.  
-%\usepackage[figurename=Figure , tablename=Table ]{caption}
 \usepackage{caption}
 \renewcommand{\figurename}{Figure}
 \renewcommand{\tablename}{Table}
 
-
-\newtheorem{definition}{Definition}
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
-\newcommand{\ie}{\textit{i}.\textit{e}., }
-\newcommand{\eg}{\textit{e}.\textit{g}., }
-
-
+%%%for the font of Times New Roman 
+\newcommand{\tnewroman}{\fontspec{Times New Roman}}
 %==========
 % Segment 2. Define general-purpose LaTeX commands.
 %==========
@@ -135,7 +92,7 @@
 \setcounter{tocdepth}{2}     % 目录深度 (part 对应 -1)
     
 % User defined command list
-%% \me \mi \mj \dif \cleardoublepage \cndash \CJKLaTeX
+%% \me \mi \mj \dif \cleardoublepage \cndash \CJKLaTeX \upcite
 
 % A new column type
 \newcolumntype{d}[1]{D{.}{.}{#1}}% or D{.}{,}{#1} or D{.}{\cdot}{#1}
@@ -160,6 +117,9 @@
 % CJK-LaTeX Logo \CJKLaTeX
 \newcommand{\CJKLaTeX}{CJK--\LaTeX} 
 
+% Upper quote
+\newcommand{\upcite}[1]{\textsuperscript{\cite{#1}}}
+
 % cndash
 \newcommand{\cndash}{\rule{0.0em}{0pt}\rule[0.35em]{1.4em}{0.05em}\rule{0.2em}{0pt}}
 
@@ -171,7 +131,7 @@
 \setmainfont{TeX Gyre Termes}
 
 %% 行距缩放因子
-\linespread{1.5}
+\linespread{1.3}
 
 %% CTeX Settings
 % 名称：目录、表格索引、插图索引、算法、算法索引、代码
@@ -182,25 +142,14 @@
 \renewcommand{\listalgorithmname}{\sjtu@listalgorithmname}
 \renewcommand{\lstlistingname}{\sjtu@value@listingname}
 % Title Settings at the chapter Level
-
-
-%Change the format of each chapter
 \ctexset{chapter={
-	format = {\vspace*{-10\p@}},
-	number = {Chapter~\thechapter },
-	name = {,},
-%	beforeskip={0\p@ },
-%	afterskip={0\p@},
+	name = {CHAPTER\quad }, number = {\arabic{chapter}}, 
+	nameformat={\Large\bfseries},
+	titleformat={\Large\bfseries},
+	beforeskip={15\p@},
+	afterskip={12\p@},
 	}
 }
-
-%Change the number of each chapter
-\titleformat{\chapter}{\centering\Large\bfseries}{Chapter\,\thechapter\,}{1em}{}
-
-%Change the top-margin of each chapter
-\titlespacing*{\chapter}{0pt}{10pt}{40pt}
-
-
 % Title Settings at the section Level
 \ctexset{section={
 	format={\large\bfseries},
@@ -222,20 +171,6 @@
 	}
 }
 
-%\CTEXsetup[number={Chapter~\thechapter }]{chapter}
-%\CTEXsetup[name={,}]{chapter}                             
-%\CTEXsetup[beforeskip={-22pt}]{chapter}
-
-%\CTEXsetup[name={,}]{chapter} 
-%\CTEXsetup[number={\arabic{chapter}}]{chapter} 
-%\CTEXsetup[format={\noindent}]{chapter} 
-%\CTEXsetup[nameformat={\bfseries\sihao \centering \kaishu}]{chapter} 
-%\CTEXsetup[titleformat={\bfseries\sihao \centering \kaishu}]{chapter} 
-%\CTEXsetup[beforeskip={6pt minus -22pt}]{chapter} 
-%\CTEXsetup[afterskip={6pt}]{chapter} 
-
-  
-
 % bullets in the item
 \renewcommand{\labelitemi}{\ensuremath{\bullet}}
 
@@ -244,9 +179,9 @@
 \DeclareGraphicsExtensions{.pdf,.eps,.png,.jpg,.jpeg}
 
 % Caption setting in ccaption pacakge
-%\captiondelim{\ }
-%\captionnamefont{\kaishu\small}
-%\captiontitlefont{\kaishu\small}
+\captiondelim{\ }
+\captionnamefont{\kaishu\small}
+\captiontitlefont{\kaishu\small}
 
 % Floating parameters
 \renewcommand{\textfraction}{0.15}
@@ -305,6 +240,8 @@
   extendedchars=false,columns=flexible,mathescape=true
   numbersep=-1em
 }
+%  参考文献风格 GBT7714-2005
+\bibliographystyle{bst/GBT7714-2005NLang}
 
 % 定理环境
 \newtheoremstyle{break}% name
@@ -364,7 +301,6 @@
 \newcommand\confidential[1]{\def\sjtu@value@confidential{#1}}
 \newcommand\school[1]{\def\sjtu@value@school{#1}}
 \newcommand\chinesedegree[1]{\def\sjtu@value@chinesedegree{#1}}
-%\renewcommand\title[2][\sjtu@value@title]{%
 \renewcommand\title[2][\sjtu@value@englishtitle]{%
   \def\sjtu@value@title{#2}
   \def\sjtu@value@titlemark{\MakeUppercase{#1}}}
@@ -377,68 +313,43 @@
 \newcommand\institute[1]{\def\sjtu@value@institute{#1}}
 \newcommand\chairman[1]{\def\sjtu@value@chairman{#1}}
 
+% sjtuspace
+\newcommand\sjtuspace{\protect\CTEX@spaceChar\protect\CTEX@spaceChar}
+\def\sjtu@getfileinfo#1 #2 #3\relax#4\relax{%
+  \def\sjtufiledate{#1}%
+  \def\sjtufileversion{#2}%
+  \def\sjtufileinfo{#3}}%
+\expandafter\ifx\csname ver@sjtuthesis.cls\endcsname\relax
+  \edef\reserved@a{\csname ver@ctextemp_sjtuthesis.cls\endcsname}
+\else
+  \edef\reserved@a{\csname ver@sjtuthesis.cls\endcsname}
+\fi
+\expandafter\sjtu@getfileinfo\reserved@a\relax? ? \relax\relax
 \def\sjtu@underline[#1]#2{%
   \CTEXunderline{\hbox to #1{\hfill#2\hfill}}}
 \def\sjtuunderline{\@ifnextchar[\sjtu@underline\CTEXunderline}
 
-
-% “绘制”SJTU中文标题页 - v0.9.3
-%\renewcommand\maketitle[1]{%
-%  \cleardoublepage
-%  \thispagestyle{empty}
-%  \begin{center}
-%  {\songti\zihao{-3}\sjtu@label@statement}
-%  \vskip\stretch{1}
-%  {\heiti\zihao{3}\sjtu@value@title}
-%  \vskip\stretch{1}
-%  {\fangsong\zihao{4}}
-%  \def\tabcolsep{1pt}
-%  \def\arraystretch{1.5}
-%  \begin{tabular}{rl}
-%    \ifsjtu@review
-%      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@author\end{CJKfilltwosides} & \underline{\makebox[150pt]{}}\\
-%      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@studentnumber\end{CJKfilltwosides} & \underline{\makebox[150pt]{}} \\
-%      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@advisor\end{CJKfilltwosides}  & \underline{\makebox[150pt]{}} \\ 
-%      \ifx\sjtu@value@coadvisor\undefined\else
-%        \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@coadvisor\end{CJKfilltwosides} & \underline{\makebox[150pt]{}} \\ 
-%      \fi
-%    \else
-%      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@author\end{CJKfilltwosides}	& \underline{\makebox[150pt]{\sjtu@value@author}} \\
-%      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@studentnumber\end{CJKfilltwosides} & \underline{\makebox[150pt]{\sjtu@value@studentnumber}} \\
-%      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@advisor\end{CJKfilltwosides} 	 & \underline{\makebox[150pt]{\sjtu@value@advisor}} \\ 
-%      \ifx\sjtu@value@coadvisor\undefined\else
-%        \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@coadvisor\end{CJKfilltwosides} 	 & \underline{\makebox[150pt]{\sjtu@value@coadvisor}} \\ 
-%      \fi
-%    \fi
-%      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@major\end{CJKfilltwosides} 	 & \underline{\makebox[150pt]{\sjtu@value@major}} \\
-%      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@defenddate\end{CJKfilltwosides} 	 & \underline{\makebox[150pt]{\sjtu@value@defenddate}}
-%  \end{tabular}
-%  \end{center}
-%  \vskip \stretch{0.5}
-%  \cleardoublepage
-%}
-
-% “绘制”SJTU中文标题页 - v0.5.2 - for english version
+% “绘制”SJTU中文标题页
 \renewcommand\maketitle[1]{%
   \cleardoublepage
   \thispagestyle{empty}
   \begin{center}
 \begin{figure}[!htp]
  \centering
- \includegraphics[angle=0,origin=br,width=13cm]{figure/sjtu.jpg}
+ \includegraphics[angle=0,origin=br,width=13cm]{figure/sjtu}
 \end{figure}
 \heiti\zihao{-2}\sjtu@label@sjtu
 \vskip 15pt
-\kaishu\zihao{1}\sjtu@label@statement
+\textbf{\kaishu\zihao{1}\sjtu@label@statement}
 \vskip 5pt
 \heiti\zihao{-2}\sjtu@label@bacheloreng
 \begin{figure}[!htp]
  \centering
- \includegraphics[angle=0,origin=br,width=4cm]{figure/sjtulogo.pdf}
+ \includegraphics[angle=0,origin=br,width=4cm]{figure/sjtubadge}
 \end{figure}
     \vskip 20pt
     \begin{tabular}{ll}
-    \huge{\kaishu\sjtu@label@title:} &\kaishu
+    \huge{\kaishu\sjtu@label@title} &\kaishu
 \sjtuunderline[350pt]{\sjtu@value@title}
     \end{tabular}
     \vskip 5pt
@@ -446,20 +357,20 @@
     \def\tabcolsep{1pt}
     \def\arraystretch{1}
     \begin{tabular}{lc}
-      \kaishu{\sjtu@label@studentname} &\kaishu
-      \sjtuunderline[250pt]{\sjtu@value@studentname}
+      \kaishu\sjtu@label@author &\kaishu
+      \sjtuunderline[150pt]{\sjtu@value@author}
     \\
-      \kaishu{\sjtu@label@studentnumber} &\kaishu
-      \sjtuunderline[250pt]{\sjtu@value@studentnumber}
+      \kaishu\sjtu@label@studentnumber &\kaishu
+      \sjtuunderline[150pt]{\sjtu@value@studentnumber}
     \\
-      \kaishu{\sjtu@label@major} &\kaishu
-      \sjtuunderline[250pt]{\sjtu@value@major}
+      \kaishu\sjtu@label@advisor &\kaishu
+      \sjtuunderline[150pt]{\sjtu@value@advisor}
     \\  
-      \kaishu{\sjtu@label@advisor} &\kaishu
-      \sjtuunderline[250pt]{\sjtu@value@advisor}
+      \kaishu\sjtu@label@major &\kaishu
+      \sjtuunderline[150pt]{\sjtu@value@major}
     \\  
-      \kaishu{\sjtu@label@institution} &\kaishu
-      \sjtuunderline[250pt]{\sjtu@value@institution}
+      \kaishu\sjtu@label@institute &\kaishu
+      \sjtuunderline[150pt]{\sjtu@value@institute}
     \end{tabular}
   \end{center}
   \vskip \stretch{0.5}
@@ -469,9 +380,8 @@
     \ifsjtu@typeinfo
     \fi
     \cleardoublepage
+  \fi
 }
-
-
 
 % English Title Page
 \newcommand\englishtitle[1]{\def\sjtu@value@englishtitle{#1}}
@@ -558,16 +468,30 @@
 	\fancypagestyle{main}{
 	  \fancyhf{}
 	  \fancyhead[L]{\includegraphics[width=0.22\textwidth]{figure/sjtubanner}}
-	  \fancyhead[R]{\nouppercase{\small\kaishu\sjtu@value@titlemark}}
-	  \fancyfoot[C]{\small {\bfseries\thepage}/{\bfseries\pageref{LastPage}}}
+	  \fancyhead[R]{\uppercase{\tnewroman\sjtu@value@titlemark}}
+	  \fancyfoot[C]{\small {\bfseries\thepage}}
 	  \renewcommand{\headheight}{32pt}
 	}
+  \fancypagestyle{front}{
+    \fancyhf{}
+    \fancyhead[L]{\includegraphics[width=0.22\textwidth]{figure/sjtubanner}}
+    \fancyhead[R]{\uppercase{\tnewroman\sjtu@value@titlemark}}
+    \renewcommand{\headheight}{32pt}
+  }
+  %% 英文大摘要
+  \fancypagestyle{biglast}{
+    \fancyhf{}
+    \fancyhead[L]{\includegraphics[width=0.22\textwidth]{figure/sjtubanner}}
+    \fancyhead[R]{\uppercase{\tnewroman\sjtu@value@titlemark}}
+    \fancyfoot[C]{\small {\bfseries\thepage}}
+    \renewcommand{\headheight}{32pt}
+  }
 	%% 开章页页眉页脚
 	\fancypagestyle{plain}{% 设置开章页页眉页脚风格(只有页码作为页脚)
-	  \fancyhf{}%
+	  \fancyhf{}
 	  \fancyhead[L]{\nouppercase{\small\kaishu\includegraphics[width=0.22\textwidth]{figure/sjtubanner}}}
-	  \fancyhead[R]{\nouppercase{\small\kaishu\sjtu@value@titlemark}}
-	  \fancyfoot[C]{\small {\bf\thepage}/{\bf\pageref{LastPage}}}
+	  \fancyhead[R]{\uppercase{\tnewroman\sjtu@value@titlemark}}
+	  \fancyfoot[C]{\small {\bfseries\thepage}}
 	  \renewcommand{\headheight}{32pt}
 	}
 \else
@@ -610,10 +534,10 @@
 \fi
 
 % 中英文摘要
-\newenvironment{abstract}{\chapter*{\sjtu@value@title\vskip 20pt\sjtu@label@abstract}\markboth{\sjtu@label@abstract}{}}{}
-\newcommand\keywords[1]{\vspace{2ex}\noindent{\bf\large \sjtu@label@keywords} #1}
-\newenvironment{englishabstract}{\chapter*{\sjtu@value@englishtitle\vskip 20pt\bfseries \sjtu@label@englishabstract}\markboth{\sjtu@label@englishabstract}{}}{}
-\newcommand\englishkeywords[1]{\vspace{2ex}\noindent{\bf\large \sjtu@label@englishkeywords} #1}
+\newenvironment{abstract}{\chapter*{\zihao{3}\sjtu@value@title\vskip 20pt\zihao{4}\sjtu@label@abstract}\markboth{\sjtu@label@abstract}{}}{}
+\newcommand\keywords[1]{\vspace{4ex}\noindent{\heiti\zihao{-4}\sjtu@label@keywords} #1}
+\newenvironment{englishabstract}{\chapter*{\zihao{3}\MakeUppercase{\sjtu@value@englishtitle}\vskip 20pt\bfseries \zihao{4}\sjtu@label@englishabstract}\markboth{\sjtu@label@englishabstract}{}}{}
+\newcommand\englishkeywords[1]{\vspace{2ex}\noindent{\bf\zihao{-4} \sjtu@label@englishkeywords} #1}
 
 \renewcommand\tableofcontents{%
   \chapter*{\contentsname}
@@ -707,14 +631,37 @@
    {\endlist}
    
 \renewenvironment{thanks}
-  {\chapter{\sjtu@label@thanks}}
+  {\chapter{\sjtu@label@thanks}\label{last}}
   {}
+
+\newenvironment{bigabstract}
+{
+\setcounter{page}{1}
+\fancypagestyle{biglast}{
+  \fancyhf{}
+  \fancyhead[L]{\includegraphics[width=0.22\textwidth]{figure/sjtubanner}}
+  \fancyhead[R]{\nouppercase{\small\kaishu\sjtu@value@titlemark}}
+  \fancyfoot[C]{\small 第~{\bfseries\thepage}~页\,共~{\bfseries\pageref{biglast}}~页}
+  \renewcommand{\headheight}{32pt}
+}
+
+\fancypagestyle{plain}{% 设置开章页页眉页脚风格(只有页码作为页脚)
+  \fancyhf{}
+  \fancyhead[L]{\includegraphics[width=0.22\textwidth]{figure/sjtubanner}}
+  \fancyhead[R]{\nouppercase{\small\kaishu\sjtu@value@titlemark}}
+  \fancyfoot[C]{\small {\bf\thepage}}
+  \renewcommand{\headheight}{32pt}
+}
+
+\chapter*{\bf\MakeUppercase{\sjtu@value@englishtitle}\vskip 20pt }
+}
+{\label{biglast}}
 
 \newenvironment{summary}
 {\chapter*{\sjtu@label@summary\markboth{\sjtu@label@summary}{}}\addcontentsline{toc}{chapter}{\sjtu@label@summary}
 }{}
 
-\newenvironment{symbolnote}{\chapter{\sjtu@label@symbolnote}}{} 
+\newenvironment{symbolnote}{\chapter{\sjtu@label@symbolnote}}{}
 
 \endinput
 
